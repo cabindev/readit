@@ -1,17 +1,10 @@
 import "./globals.css";
-import Navbar from "~/components/Navbar";
-import Toast from "~/components/Toast";
 import { ReactNode } from "react";
-import { seppuri } from "~/fonts";
-import { getSession } from "~/libs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: {
-        template: "%s | readit",
-        default: "readit",
-    },
-    description: "ศูนย์รวมหนังสือดิจิทัลคุณภาพสูง",
+    title: "readit - ศูนย์รวมหนังสือดิจิทัลคุณภาพสูง",
+    description: "ศูนย์รวมหนังสือดิจิทัลคุณภาพสูง อ่านฟรี ไม่จำกัด",
     icons: {
         icon: '/favicon.ico',
     },
@@ -21,14 +14,10 @@ interface LayoutProps {
     children: ReactNode;
 }
 
-export default async function layout({ children }: LayoutProps) {
-    const session = await getSession();
-
+export default function RootLayout({ children }: LayoutProps) {
     return (
-        <html lang="en" className={seppuri.variable}>
-            <body className="font-seppuri text-sm bg-secondary-50 text-secondary-900">
-                <Toast />
-                <Navbar session={JSON.parse(JSON.stringify(session))} />
+        <html lang="th">
+            <body className="antialiased">
                 {children}
             </body>
         </html>
