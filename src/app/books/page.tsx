@@ -1,4 +1,6 @@
-// Mock data for books
+import { getBooks } from "~/db/book"
+
+// Mock data as fallback
 const mockBooks = [
   {
     id: '1',
@@ -10,6 +12,12 @@ const mockBooks = [
     pages: 320,
     views: 1250,
     rating: 4.5,
+    imageUrl: '',
+    pdfUrl: '',
+    tagId: '',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    tag: { id: '1', title: 'เทคโนโลยี', createdAt: new Date(), updatedAt: new Date() }
   },
   {
     id: '2',
@@ -21,6 +29,12 @@ const mockBooks = [
     pages: 450,
     views: 980,
     rating: 4.2,
+    imageUrl: '',
+    pdfUrl: '',
+    tagId: '',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    tag: { id: '2', title: 'ประวัติศาสตร์', createdAt: new Date(), updatedAt: new Date() }
   },
   {
     id: '3',
@@ -32,51 +46,50 @@ const mockBooks = [
     pages: 280,
     views: 760,
     rating: 4.0,
-  },
-  {
-    id: '4',
-    title: 'การจัดการธุรกิจยุคดิจิทัล',
-    author: 'ผู้เชี่ยวชาญธุรกิจ',
-    category: 'ธุรกิจ',
-    coverImage: '/api/placeholder/150/200',
-    description: 'กลยุทธ์การทำธุรกิจในยุคเทคโนโลยี',
-    pages: 380,
-    views: 2100,
-    rating: 4.8,
-  },
-  {
-    id: '5',
-    title: 'วรรณกรรมไทยร่วมสมัย',
-    author: 'นักวิชาการวรรณกรรม',
-    category: 'วรรณกรรม',
-    coverImage: '/api/placeholder/150/200',
-    description: 'การศึกษาวรรณกรรมไทยในช่วงศตวรรษที่ 21',
-    pages: 520,
-    views: 840,
-    rating: 4.3,
-  },
-  {
-    id: '6',
-    title: 'หลักการวิทยาศาสตร์',
-    author: 'ศาสตราจารย์วิทยาศาสตร์',
-    category: 'วิทยาศาสตร์',
-    coverImage: '/api/placeholder/150/200',
-    description: 'หลักการพื้นฐานของวิทยาศาสตร์ที่ทุกคนควรรู้',
-    pages: 420,
-    views: 1560,
-    rating: 4.6,
-  },
+    imageUrl: '',
+    pdfUrl: '',
+    tagId: '',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    tag: { id: '3', title: 'การศึกษา', createdAt: new Date(), updatedAt: new Date() }
+  }
 ]
 
-export default function BooksPage() {
+export default async function BooksPage() {
+  // Try to get books from database, fallback to mock data
+  let books;
+  let isUsingDatabase = false;
+  
+  try {
+    books = await getBooks();
+    if (books && books.length > 0 && books[0].id !== 'build-time-mock') {
+      isUsingDatabase = true;
+    } else {
+      books = mockBooks;
+    }
+  } catch (error) {
+    console.log('Database connection failed, using mock data');
+    books = mockBooks;
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">หนังสือทั้งหมด</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900">หนังสือทั้งหมด</h1>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              isUsingDatabase 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-orange-100 text-orange-800'
+            }`}>
+              {isUsingDatabase ? 'Database Live' : 'Demo Mode'}
+            </span>
+          </div>
           <p className="mt-2 text-gray-600">
-            ค้นพบหนังสือดิจิทัลคุณภาพสูงในหลากหลายหมวดหมู่
+            {isUsingDatabase 
+              ? 'แสดงข้อมูลจากฐานข้อมูล Supabase' 
+              : 'ค้นพบหนังสือดิจิทัลคุณภาพสูงในหลากหลายหมวดหมู่'}
           </p>
         </div>
       </div>
@@ -105,7 +118,7 @@ export default function BooksPage() {
 
         {/* Books Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {mockBooks.map((book) => (
+          {books.map((book) => (
             <div
               key={book.id}
               className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
@@ -127,17 +140,17 @@ export default function BooksPage() {
                 </h3>
                 
                 <p className="text-xs text-gray-600 mb-2">
-                  โดย {book.author}
+                  หมวดหมู่: {book.tag?.title || book.category || 'ไม่ระบุ'}
                 </p>
                 
                 <p className="text-xs text-gray-500 mb-3 line-clamp-2">
-                  {book.description}
+                  {book.description || 'ไม่มีคำอธิบาย'}
                 </p>
 
                 {/* Stats */}
                 <div className="flex justify-between items-center text-xs text-gray-500 mb-3">
-                  <span>{book.pages} หน้า</span>
-                  <span>{book.views.toLocaleString()} ครั้ง</span>
+                  <span>{book.pages || 'N/A'} หน้า</span>
+                  <span>{(book.views || 0).toLocaleString()} ครั้ง</span>
                 </div>
 
                 {/* Rating */}
@@ -147,7 +160,7 @@ export default function BooksPage() {
                       <svg
                         key={i}
                         className={`h-3 w-3 ${
-                          i < Math.floor(book.rating)
+                          i < Math.floor(book.rating || 0)
                             ? 'text-yellow-400'
                             : 'text-gray-300'
                         }`}
@@ -158,7 +171,7 @@ export default function BooksPage() {
                       </svg>
                     ))}
                     <span className="ml-1 text-xs text-gray-600">
-                      {book.rating}
+                      {(book.rating || 0)}
                     </span>
                   </div>
                 </div>
