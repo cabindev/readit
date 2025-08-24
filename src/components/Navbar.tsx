@@ -1,144 +1,136 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import Wrapper from "./Wrapper";
-import { useState } from "react";
-import { cn, logout } from "~/libs";
-import { SessionData } from "~/constants";
-import { 
-   ArrowRightOnRectangleIcon, 
-   UserPlusIcon,
-   Bars2Icon,
-   ArrowLeftOnRectangleIcon
-} from "@heroicons/react/24/solid";
+import { useState } from 'react'
 
-interface NavbarProps {
-  session: SessionData;
-}
-
-export default function Navbar({ session }: NavbarProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-      setIsMenuOpen(!isMenuOpen);
-  };
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-      <nav className="relative bg-white/95 backdrop-blur-md shadow-sm border-b border-primary-100">
-          <Wrapper className="flex flex-wrap items-center justify-between py-3">
-              <Link
-                  href="/"
-                  className="flex items-center gap-2 text-xl font-bold text-primary-800 hover:text-primary-600 transition-all duration-300 group"
-              >
-                  <div className="bg-gradient-to-br from-primary-500 to-primary-600 text-white p-2 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                      </svg>
-                  </div>
-                  <div className="flex flex-col">
-                      <span className="text-lg font-bold tracking-tight">
-                          <span className="text-primary-600">SSN</span>
-                          <span className="text-secondary-800 ml-1">OpenRead</span>
-                      </span>
-                      <span className="text-xs text-secondary-500 font-normal -mt-1">Digital Library</span>
-                  </div>
-              </Link>
-              
-              <button
-                  type="button"
-                  title="เมนู"
-                  className="rounded-lg p-2 text-secondary-600 hover:bg-primary-50 hover:text-primary-600 transition-colors lg:hidden"
-                  onClick={toggleMenu}
-              >
-                  <Bars2Icon className="size-6" />
-              </button>
+    <nav className="bg-white shadow-lg border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <a href="/" className="flex items-center">
+              <span className="text-2xl font-bold">
+                <span className="text-orange-600">read</span>
+                <span className="text-gray-800">it</span>
+              </span>
+            </a>
+          </div>
 
-              <div
-                  className={cn(
-                      "w-full lg:flex lg:w-auto lg:items-center",
-                      {
-                          block: isMenuOpen,
-                          hidden: !isMenuOpen,
-                      }
-                  )}
+          {/* Desktop Menu */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4">
+              <a
+                href="/"
+                className="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
-                  <div className="mt-4 flex flex-col items-start gap-4 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-                      <Link
-                          href="/"
-                          className="text-sm text-secondary-600 hover:text-primary-600 transition-colors font-medium px-3 py-2 rounded-lg hover:bg-primary-50"
-                          onClick={() => setIsMenuOpen(false)}
-                      >
-                          หนังสือ
-                      </Link>
+                หน้าแรก
+              </a>
+              <a
+                href="/books"
+                className="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                หนังสือ
+              </a>
+              <a
+                href="/categories"
+                className="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                หมวดหมู่
+              </a>
+              <a
+                href="/about"
+                className="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                เกี่ยวกับ
+              </a>
+            </div>
+          </div>
 
-                      {session.isManager && (
-                          <>
-                              <Link
-                                  href="/manager/books/"
-                                  className="text-sm text-secondary-600 hover:text-primary-600 transition-colors font-medium px-3 py-2 rounded-lg hover:bg-primary-50"
-                                  onClick={() => setIsMenuOpen(false)}
-                              >
-                                  จัดการหนังสือ
-                              </Link>
-                              <Link
-                                  href="/manager/members/"
-                                  className="text-sm text-secondary-600 hover:text-primary-600 transition-colors font-medium px-3 py-2 rounded-lg hover:bg-primary-50"
-                                  onClick={() => setIsMenuOpen(false)}
-                              >
-                                  จัดการสมาชิก
-                              </Link>
-                          </>
-                      )}
+          {/* Login Button */}
+          <div className="hidden md:block">
+            <a
+              href="/login"
+              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              เข้าสู่ระบบ
+            </a>
+          </div>
 
-                      <div className="flex items-center gap-2 lg:border-l lg:border-secondary-200 lg:pl-6">
-                          {!session.isLoggedIn ? (
-                              <>
-                                  <Link
-                                      href="/auth/sign-up/"
-                                      onClick={() => setIsMenuOpen(false)}
-                                  >
-                                      <button
-                                          type="button"
-                                          className="p-2 text-secondary-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200"
-                                          title="สมัครสมาชิก"
-                                      >
-                                          <UserPlusIcon className="size-5" />
-                                      </button>
-                                  </Link>
-                                  <Link
-                                      href="/auth/sign-in"
-                                      onClick={() => setIsMenuOpen(false)}
-                                  >
-                                      <button
-                                          type="button"
-                                          className="p-2 text-secondary-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200"
-                                          title="เข้าสู่ระบบ"
-                                      >
-                                          <ArrowRightOnRectangleIcon className="size-5" />
-                                      </button>
-                                  </Link>
-                              </>
-                          ) : (
-                              <div className="flex items-center gap-3">
-                                  {session.name && (
-                                      <span className="text-sm text-secondary-700 font-medium hidden lg:block">
-                                          {session.name}
-                                      </span>
-                                  )}
-                                  <button
-                                      type="button"
-                                      onClick={() => logout()}
-                                      className="p-2 text-secondary-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                      title="ออกจากระบบ"
-                                  >
-                                      <ArrowLeftOnRectangleIcon className="size-5" />
-                                  </button>
-                              </div>
-                          )}
-                      </div>
-                  </div>
-              </div>
-          </Wrapper>
-      </nav>
-  );
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="bg-gray-50 p-2 rounded-md text-gray-600 hover:text-orange-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <span className="sr-only">Open main menu</span>
+              <svg
+                className="h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 border-t border-gray-200">
+            <a
+              href="/"
+              className="text-gray-700 hover:text-orange-600 block px-3 py-2 rounded-md text-base font-medium"
+            >
+              หน้าแรก
+            </a>
+            <a
+              href="/books"
+              className="text-gray-700 hover:text-orange-600 block px-3 py-2 rounded-md text-base font-medium"
+            >
+              หนังสือ
+            </a>
+            <a
+              href="/categories"
+              className="text-gray-700 hover:text-orange-600 block px-3 py-2 rounded-md text-base font-medium"
+            >
+              หมวดหมู่
+            </a>
+            <a
+              href="/about"
+              className="text-gray-700 hover:text-orange-600 block px-3 py-2 rounded-md text-base font-medium"
+            >
+              เกี่ยวกับ
+            </a>
+            <a
+              href="/login"
+              className="bg-orange-600 hover:bg-orange-700 text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
+            >
+              เข้าสู่ระบบ
+            </a>
+          </div>
+        </div>
+      )}
+    </nav>
+  )
 }

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { ReactNode } from "react";
 import { Metadata } from "next";
+import Navbar from "~/components/Navbar";
 
 export const metadata: Metadata = {
     title: "readit - ศูนย์รวมหนังสือดิจิทัลคุณภาพสูง",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: LayoutProps) {
     return (
         <html lang="th">
             <body className="antialiased">
+                <Navbar />
                 {children}
             </body>
         </html>
