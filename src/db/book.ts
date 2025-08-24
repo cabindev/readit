@@ -31,8 +31,17 @@ export async function getBooks() {
     if (isBuildTime()) {
         return [mockBook];
     }
-    const books = await prisma.book.findMany({ orderBy: { views: "asc" } });
-    return books;
+    
+    try {
+        const books = await prisma.book.findMany({ 
+            orderBy: { views: "asc" },
+            include: { tag: true }
+        });
+        return books;
+    } catch (error) {
+        console.error('Database connection failed:', error);
+        throw error;
+    }
 }
 
 export async function getBooksWithPagination({
@@ -100,12 +109,24 @@ export async function getRecentBooks(limit: number = 6) {
 }
 
 export async function getBooksStats() {
-    const totalBooks = await prisma.book.count();
-    const totalViews = await prisma.book.aggregate({
-        _sum: { views: true },
-    });
-    return {
-        totalBooks,
-        totalViews: totalViews._sum.views || 0,
-    };
+    if (isBuildTime()) {
+        return {
+            totalBooks: 0,
+            totalViews: 0,
+        };
+    }
+    
+    try {
+        const totalBooks = await prisma.book.count();
+        const totalViews = await prisma.book.aggregate({
+            _sum: { views: true },
+        });
+        return {
+            totalBooks,
+            totalViews: totalViews._sum.views || 0,
+        };
+    } catch (error) {
+        console.error('Database stats query failed:', error);
+        throw error;
+    }
 }
