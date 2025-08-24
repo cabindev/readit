@@ -2,7 +2,35 @@
 
 import prisma from "../../prisma";
 
+// Mock data for build time
+const mockBook = {
+    id: 'build-time-mock',
+    title: 'Loading...',
+    imageUrl: '/placeholder-book.jpg',
+    pdfUrl: '/placeholder.pdf',
+    views: 0,
+    rating: 0,
+    tagId: 'mock-tag',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    tag: {
+        id: 'mock-tag',
+        title: 'Loading...',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+};
+
+// Helper function to check if we're in build mode
+const isBuildTime = () => {
+    return process.env.NODE_ENV === 'production' && 
+           (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('placeholder'));
+};
+
 export async function getBooks() {
+    if (isBuildTime()) {
+        return [mockBook];
+    }
     const books = await prisma.book.findMany({ orderBy: { views: "asc" } });
     return books;
 }
@@ -37,6 +65,9 @@ export async function getBooksWithPagination({
 }
 
 export async function getBookById({ id }: { id: string }) {
+    if (isBuildTime()) {
+        return mockBook;
+    }
     const book = await prisma.book.findUnique({ 
         where: { id },
         include: { tag: true }
