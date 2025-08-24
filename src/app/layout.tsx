@@ -8,10 +8,10 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: {
-        template: "%s | SSN OpenRead",
-        default: "SSN OpenRead",
+        template: "%s | readit",
+        default: "readit",
     },
-    description: "ศูนย์รวมหนังสือดิจิทัลคุณภาพสูง - SSN OpenRead",
+    description: "ศูนย์รวมหนังสือดิจิทัลคุณภาพสูง",
     icons: {
         icon: '/favicon.ico',
     },

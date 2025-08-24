@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Button from "./Button";
 
 export default function HeroSection() {
@@ -18,25 +17,13 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="relative bg-gradient-to-br from-primary-50 via-white to-primary-100/50 py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/img/takhone.jpg"
-          alt="Library Background"
-          fill
-          className="object-cover "
-          priority
-          unoptimized
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-white/80 to-white/70" />
-      </div>
+    <div className="relative bg-gradient-to-br from-primary-50 via-white to-primary-100/50 py-12 px-4 sm:px-6 lg:px-8">
 
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center">
           {/* Main Title */}
           <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 mb-4">
-            <span className="text-primary-600">SSN</span> OpenRead
+            <span className="text-primary-600">read</span>it
           </h1>
           
           {/* Subtitle */}
