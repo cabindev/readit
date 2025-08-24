@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
 import { signInSchema, signUpSchema } from "~/schemas";
 import { getSession } from "~/libs";
+import { supabase } from "~/libs/supabase";
 
 export async function signInAction(_: any, formData: FormData) {
     let isSuccess: boolean = false;
@@ -15,35 +16,54 @@ export async function signInAction(_: any, formData: FormData) {
 
         const { email, password } = validated;
 
-        const isExist = await prisma.member.findUnique({
-            where: { email: email.toLowerCase() },
-        });
-        if (!isExist) {
-            return {
-                success: false,
-                message: "กรุณากรอกข้อมูลให้ถูกต้อง",
-            };
+        // Try Prisma first for existing users
+        try {
+            const isExist = await prisma.member.findUnique({
+                where: { email: email.toLowerCase() },
+            });
+            
+            if (isExist) {
+                const isMatch = await bcrypt.compare(password, isExist.password);
+                if (!isMatch) {
+                    return {
+                        success: false,
+                        message: "กรุณากรอกข้อมูลให้ถูกต้อง",
+                    };
+                }
+
+                const session = await getSession();
+                session.id = isExist.id;
+                session.name = isExist.name;
+                session.email = isExist.email;
+                session.isManager = isExist.role == "Manager" ? true : false;
+                session.isLoggedIn = true;
+                await session.save();
+                
+                isSuccess = true;
+            }
+        } catch (dbError) {
+            console.log('Database connection failed, trying demo account');
         }
 
-        const isMatch = await bcrypt.compare(password, isExist.password);
-        if (!isMatch) {
-            return {
-                success: false,
-                message: "กรุณากรอกข้อมูลให้ถูกต้อง",
-            };
+        // If database failed or user not found, try demo account
+        if (!isSuccess) {
+            if (email.toLowerCase() === 'demo@readit.com' && password === 'demo123') {
+                const session = await getSession();
+                session.id = 'demo-user';
+                session.name = 'ผู้ใช้ทดลอง';
+                session.email = 'demo@readit.com';
+                session.isManager = true;
+                session.isLoggedIn = true;
+                await session.save();
+                
+                isSuccess = true;
+            } else {
+                return {
+                    success: false,
+                    message: "กรุณากรอกข้อมูลให้ถูกต้อง หรือใช้ demo@readit.com / demo123",
+                };
+            }
         }
-
-        const session = await getSession();
-
-        session.id = isExist.id;
-        session.name = isExist.name;
-        session.email = isExist.email;
-        session.isManager = isExist.role == "Manager" ? true : false;
-        session.isLoggedIn = true;
-
-        await session.save();
-
-        isSuccess = true;
     } catch (error) {
         return {
             success: false,
