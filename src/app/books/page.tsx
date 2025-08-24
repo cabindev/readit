@@ -99,18 +99,18 @@ export default async function BooksPage() {
         {/* Stats */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="text-2xl font-bold text-orange-600">{mockBooks.length}</div>
+            <div className="text-2xl font-bold text-orange-600">{books.length}</div>
             <div className="text-sm text-gray-600">หนังสือทั้งหมด</div>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <div className="text-2xl font-bold text-orange-600">
-              {mockBooks.reduce((sum, book) => sum + book.views, 0).toLocaleString()}
+              {books.reduce((sum, book) => sum + (book.views || 0), 0).toLocaleString()}
             </div>
             <div className="text-sm text-gray-600">ยอดเข้าชมรวม</div>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <div className="text-2xl font-bold text-orange-600">
-              {new Set(mockBooks.map(book => book.category)).size}
+              {new Set(books.map(book => book.tag?.title).filter(Boolean)).size}
             </div>
             <div className="text-sm text-gray-600">หมวดหมู่</div>
           </div>
@@ -128,7 +128,7 @@ export default async function BooksPage() {
                 <div className="text-center p-4">
                   <div className="text-4xl mb-2">📖</div>
                   <div className="text-xs text-gray-600 font-medium">
-                    {book.category}
+                    {book.tag?.title || 'ไม่ระบุ'}
                   </div>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default async function BooksPage() {
                 </h3>
                 
                 <p className="text-xs text-gray-600 mb-2">
-                  หมวดหมู่: {book.tag?.title || book.category || 'ไม่ระบุ'}
+                  หมวดหมู่: {book.tag?.title || 'ไม่ระบุ'}
                 </p>
                 
                 <p className="text-xs text-gray-500 mb-3 line-clamp-2">
